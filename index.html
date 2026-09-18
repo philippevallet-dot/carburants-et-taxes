@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1E7A5F">
+<meta name="description" content="Ce que vous payez vraiment à chaque plein — coût réel vs. taxes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Carburants et Taxes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+
+:root{
+  --bg:#F1F4F1; --surface:#FFFFFF; --surface-2:#E8EEE9;
+  --ink:#142420; --muted:#5E7268; --border:#DCE6DE;
+  --cost:#1E7A5F; --cost-soft:#DCEFE7; --cost-dark:#14513F;
+  --tax:#B23A2E; --tax-soft:#F7E1DD;
+  --c-cotation:#3D6FB4; --c-dist:#4C9A6A; --c-cee:#2E7A4E;
+  --c-tvaprod:#8FBFE0; --c-ticpe:#7B5EA7; --c-tvaticpe:#D98A8A;
+  --total-color:#C23B2E;
+  --shadow: 0 1px 2px rgba(20,36,32,.06), 0 8px 24px rgba(20,36,32,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1512; --surface:#16211C; --surface-2:#1D2B24;
+    --ink:#E8F0EA; --muted:#8FA79B; --border:#223028;
+    --cost:#53DBAA; --cost-soft:#173A2E; --cost-dark:#8FF0CB;
+    --tax:#FF8A6E; --tax-soft:#3A1E19;
+    --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#4E9C6E;
+    --c-tvaprod:#3E5A73; --c-ticpe:#A88FD6; --c-tvaticpe:#E3A5A0;
+    --total-color:#FF8A6E;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1512; --surface:#16211C; --surface-2:#1D2B24;
+  --ink:#E8F0EA; --muted:#8FA79B; --border:#223028;
+  --cost:#53DBAA; --cost-soft:#173A2E; --cost-dark:#8FF0CB;
+  --tax:#FF8A6E; --tax-soft:#3A1E19;
+  --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#4E9C6E;
+  --c-tvaprod:#3E5A73; --c-ticpe:#A88FD6; --c-tvaticpe:#E3A5A0;
+  --total-color:#FF8A6E;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',system-ui,sans-serif;}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+.wrap{max-width:640px; margin:0 auto; padding:16px 16px 48px;}
+
+header.app{position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding-block:14px 8px;}
+h1{font-size:20px; font-weight:700; margin:0 0 2px; letter-spacing:-.01em;}
+.tagline{color:var(--muted); font-size:13px; margin:0 0 14px;}
+
+.tabs{display:flex; gap:4px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:4px;}
+.tab{flex:1; text-align:center; padding:9px 6px; border-radius:9px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; user-select:none; transition:background .15s,color .15s;}
+.tab.active{background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
+
+section.panel{display:none;}
+section.panel.active{display:block;}
+
+.card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; margin-top:14px; box-shadow:var(--shadow);}
+.card h2{font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; font-weight:600;}
+
+/* ---- stacked-column chart ---- */
+.chartrow{display:flex; gap:18px; align-items:flex-end;}
+.axis{display:flex; flex-direction:column; justify-content:space-between; height:260px; padding-bottom:22px; font-size:10.5px; color:var(--muted); text-align:right; width:34px;}
+.barcol{flex:1; display:flex; flex-direction:column; align-items:center; min-width:0;}
+.bartotal{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; color:var(--total-color); margin-bottom:6px; white-space:nowrap;}
+.barshaft{width:100%; max-width:96px; height:260px; border-radius:6px 6px 3px 3px; overflow:hidden; display:flex; flex-direction:column-reverse; border:1px solid var(--border); background:var(--surface-2);}
+.seg{width:100%; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:600; color:#fff; overflow:hidden; padding:0 2px; text-align:center; line-height:1.15;}
+.barlabel{margin-top:8px; font-size:12.5px; font-weight:600; color:var(--muted);}
+.barcaption{margin-top:4px; font-size:11px; color:var(--muted); text-align:center;}
+.barcaption b{color:var(--tax);}
+
+.legend2{display:grid; grid-template-columns:1fr 1fr; gap:6px 14px; margin-top:16px; font-size:11.5px; color:var(--muted);}
+.legend2 .li{display:flex; align-items:center; gap:6px;}
+.legend2 .dot{width:10px; height:10px; border-radius:2px; flex-shrink:0;}
+
+.sliderrow{margin-top:18px;}
+.sliderrow label{display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:6px;}
+.sliderwrap{position:relative; padding:9px 0;}
+.sliderwrap input[type=range]{width:100%; accent-color:var(--cost); position:relative; z-index:0;}
+.slider-today{position:absolute; top:50%; width:11px; height:11px; margin-top:-1px; border-radius:50%; background:var(--tax); border:2px solid var(--surface); transform:translate(-50%,-50%); cursor:pointer; box-shadow:0 0 0 1px rgba(20,36,32,.25); z-index:2; pointer-events:auto;}
+.brentval{font-weight:600; color:var(--ink);}
+
+.field{margin-bottom:12px;}
+.field label{display:block; font-size:11.5px; color:var(--muted); margin-bottom:5px; font-weight:500;}
+.field input, .field select{width:100%; padding:9px 10px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); color:var(--ink); font-size:14px; font-family:inherit;}
+.field input:focus, .field select:focus{outline:2px solid var(--cost); outline-offset:1px;}
+.field input[readonly]{background:var(--surface-2); color:var(--cost-dark); font-weight:700; font-family:'IBM Plex Mono',monospace;}
+.row4{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
+@media (max-width:480px){ .row4{grid-template-columns:1fr 1fr;} }
+
+.primary{display:block; width:100%; padding:12px; border-radius:10px; border:none; background:var(--cost); color:#fff; font-weight:700; font-size:14.5px; cursor:pointer; margin-top:4px; text-align:center; text-decoration:none;}
+.primary:active{opacity:.85;}
+.ghost{display:block; width:100%; padding:11px; border-radius:10px; border:1.5px solid var(--border); background:transparent; color:var(--ink); font-weight:600; font-size:13.5px; cursor:pointer; margin-top:8px; text-align:center; text-decoration:none;}
+
+.histitem{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid var(--border); font-size:13.5px;}
+.histitem:first-child{border-top:none;}
+.histitem .h-left{color:var(--muted);}
+.histitem .h-right{font-weight:600;}
+.histitem .h-right small{display:block; font-weight:400; color:var(--tax); font-size:11.5px;}
+.empty{color:var(--muted); font-size:13px; text-align:center; padding:18px 0;}
+
+.shareCard{background:linear-gradient(155deg, var(--cost-soft), var(--surface)); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px;}
+.shareMsg{font-size:14px; line-height:1.5; margin-bottom:12px;}
+.shareStats{display:flex; gap:10px;}
+.shareStats .box{flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;}
+.shareStats .box .v{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:14px; color:var(--tax); white-space:nowrap;}
+.shareStats .box .v.alt{color:var(--cost-dark);}
+.shareStats .box .l{font-size:10.5px; color:var(--muted); margin-top:2px;}
+
+.linktoggle{font-size:12px; color:var(--muted); cursor:pointer; text-decoration:underline; text-align:center; margin:10px 0;}
+.linkbox{font-size:11.5px; color:var(--muted); word-break:break-all; background:var(--surface-2); border-radius:8px; padding:8px; margin-bottom:10px;}
+
+.smsnote{font-size:12px; color:var(--muted); line-height:1.5; margin:10px 0;}
+
+.toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:999px; font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s; z-index:20;}
+.toast.show{opacity:1;}
+
+.note{font-size:12px; color:var(--muted); line-height:1.5; margin-top:10px;}
+.sources{font-size:11px; color:var(--muted); margin-top:22px; line-height:1.6; padding-top:14px; border-top:1px solid var(--border);}
+.sources a{color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <h1>Carburants et Taxes</h1>
+    <p class="tagline">Ce que vous payez vraiment à chaque plein — coût réel vs. taxes</p>
+    <div class="tabs">
+      <div class="tab active" data-tab="sim">Simulateur</div>
+      <div class="tab" data-tab="plein">Mon plein</div>
+      <div class="tab" data-tab="partage">Partager</div>
+      <div class="tab" data-tab="bilan">Bilan</div>
+    </div>
+  </header>
+
+  <section class="panel active" id="panel-sim">
+    <div class="card">
+      <h2>Décomposition du prix, par litre</h2>
+      <div class="chartrow">
+        <div class="axis" id="sim-axis"></div>
+        <div class="barcol">
+          <div class="bartotal mono" id="bar-gazole-total">2,291 €</div>
+          <div class="barshaft" id="bar-gazole"></div>
+          <div class="barlabel">Gazole</div>
+        </div>
+        <div class="barcol">
+          <div class="bartotal mono" id="bar-sp95-total">2,063 €</div>
+          <div class="barshaft" id="bar-sp95"></div>
+          <div class="barlabel">SP95</div>
+        </div>
+      </div>
+
+      <div class="legend2">
+        <div class="li"><span class="dot" style="background:var(--c-cotation)"></span>Cotation Rotterdam</div>
+        <div class="li"><span class="dot" style="background:var(--c-dist)"></span>Coût de distribution</div>
+        <div class="li"><span class="dot" style="background:var(--c-ticpe)"></span>Accise</div>
+        <div class="li"><span class="dot" style="background:var(--c-cee)"></span>dont CEE (~0,16 €/L)</div>
+        <div class="li"><span class="dot" style="background:var(--c-tvaticpe)"></span>TVA sur accise</div>
+        <div class="li"><span class="dot" style="background:var(--c-tvaprod)"></span>TVA sur produit</div>
+      </div>
+
+      <div class="sliderrow">
+        <label><span>Cours du Brent (référence Rotterdam)</span><span class="brentval mono" id="brent-label">103 $ / baril</span></label>
+        <div class="sliderwrap">
+          <input type="range" id="brent-slider" min="-40" max="60" value="0" step="1">
+          <div class="slider-today" id="brent-today-mark" title="Prix du jour — cliquer pour revenir ici"></div>
+        </div>
+        <div class="note" id="brent-pct">Variation : 0 % — fait bouger la « Cotation Rotterdam » ; distribution, CEE et TICPE restent fixes.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Ce que prend l'État</h2>
+      <div class="chartrow" style="align-items:stretch; gap:10px;">
+        <div class="shareStats" style="flex:1">
+          <div class="box"><div class="v" id="stat-surcout-gazole">—</div><div class="l">Gazole : ajouté au coût réel</div></div>
+          <div class="box"><div class="v" id="stat-surcout-sp95">—</div><div class="l">SP95 : ajouté au coût réel</div></div>
+        </div>
+      </div>
+      <p class="note">Exemple : si le coût réel est de 1,20 €, un « +100 % » signifie que l'État ajoute 1,20 € de taxes, pour un prix final de 2,40 €.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-plein">
+    <div class="card">
+      <h2>Enregistrer un plein</h2>
+      <div class="field" style="max-width:170px">
+        <label>Date</label>
+        <input type="date" id="plein-date">
+      </div>
+      <div class="row4">
+        <div class="field">
+          <label>Carburant</label>
+          <select id="plein-fuel">
+            <option value="gazole">Gazole</option>
+            <option value="sp95">SP95</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>€ / litre</label>
+          <input type="text" inputmode="decimal" id="plein-prix" placeholder="1,899">
+        </div>
+        <div class="field">
+          <label>Litres</label>
+          <input type="text" inputmode="decimal" id="plein-litres" placeholder="42,00">
+        </div>
+        <div class="field">
+          <label>Vous avez payé</label>
+          <input type="text" id="plein-total-paye" readonly value="—">
+        </div>
+        <div class="field">
+          <label>Dont Taxes</label>
+          <input type="text" id="plein-dont-taxes" readonly value="—">
+        </div>
+      </div>
+      <button class="primary" id="plein-calc">Enregistrer ce plein</button>
+    </div>
+
+    <div class="card" id="plein-result" style="display:none">
+      <h2>Décomposition de ce plein (montants totaux)</h2>
+      <div class="chartrow">
+        <div class="barcol" style="max-width:140px">
+          <div class="bartotal mono" id="pbar-total">—</div>
+          <div class="barshaft" id="pbar" style="max-width:120px"></div>
+          <div class="barlabel" id="pbar-label">—</div>
+        </div>
+        <div style="flex:1">
+          <div class="legend2" id="pbar-legend" style="grid-template-columns:1fr;"></div>
+        </div>
+      </div>
+      <div class="chartrow" style="margin-top:14px;">
+        <div class="shareStats" style="flex:1">
+          <div class="box"><div class="v" id="pstat-surcout">—</div><div class="l">de plus que le coût réel, à cause des taxes</div></div>
+          <div class="box"><div class="v alt" id="pstat-total">—</div><div class="l">reversés à l'État sur ce plein</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Historique</h2>
+      <div id="plein-hist-summary"><div class="empty">Aucun plein enregistré pour l'instant.</div></div>
+      <details id="plein-hist-details" style="display:none; margin-top:10px;">
+        <summary style="cursor:pointer; font-size:13px; font-weight:600; color:var(--cost-dark);">Voir tous les pleins enregistrés</summary>
+        <div id="plein-history" style="margin-top:6px;"></div>
+      </details>
+      <p class="note">Conservé uniquement sur cet appareil (aucune donnée envoyée nulle part).</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-partage">
+    <div class="card">
+      <h2>Message à partager</h2>
+      <div class="shareCard">
+        <div class="shareMsg" id="share-text">Calcule d'abord un plein dans l'onglet « Mon plein » pour un message personnalisé.</div>
+        <div class="shareStats">
+          <div class="box"><div class="v" id="share-prix">—</div><div class="l" id="share-prix-label">€ / litre</div></div>
+          <div class="box"><div class="v alt" id="share-taxes">—</div><div class="l">de taxes (montant · %)</div></div>
+        </div>
+        <p style="font-weight:700; margin:12px 0 0; text-align:center;">et en plus il y a de la TVA sur les taxes!!!</p>
+      </div>
+
+      <div class="linktoggle" id="link-toggle">Afficher le lien</div>
+      <div class="linkbox" id="link-box" style="display:none"></div>
+
+      <a class="primary" id="sms-btn" href="sms:" role="button">Envoyer par SMS</a>
+
+      <p class="smsnote">Ce bouton ouvre le sélecteur de partage de votre téléphone — choisissez « Messages » pour l'envoyer par SMS à votre contact avec un lien de téléchargement. Si le sélecteur ne s'affiche pas, le message est automatiquement copié : il ne vous reste qu'à le coller dans vos SMS. Nous n'utilisons ni ne gardons aucune de vos données.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-bilan">
+    <div class="card">
+      <h2>Le paradoxe de la TICPE</h2>
+      <div class="shareStats" style="margin-bottom:10px;">
+        <div class="box"><div class="v alt">2,30 €</div><div class="l">gazole, prix record — septembre 2026</div></div>
+        <div class="box"><div class="v">−12 %</div><div class="l">consommation de carburant, mai 2026 vs 2025 (pire depuis 2008)</div></div>
+      </div>
+      <p class="note">Le baril de Brent a dépassé les 100 $ le 10 septembre 2026 (jusqu'à ~110 $), tiré par les tensions autour du détroit d'Ormuz. Résultat à la pompe : gazole à 2,30 €/L, SP95 autour de 2,17 €/L — des niveaux inédits.</p>
+      <p class="note">Mais les automobilistes ont réagi : la consommation de carburant a chuté d'environ <b>−12 % en mai</b>, puis encore <b>−6,6 % en août</b> 2026 sur un an. Résultat : sur le premier semestre 2026, les recettes de TICPE reculent légèrement par rapport à la même période en 2025 — malgré la flambée des prix.</p>
+      <p class="note"><b>Pourquoi ?</b> La TICPE est une accise <b>fixe</b> par litre (~0,60 €/L pour le gazole, ~0,68 €/L pour le SP95), indépendante du prix du baril. Elle ne rapporte que si on continue d'acheter autant de litres. Seule la TVA (20 %, proportionnelle au prix) progresse un peu avec la hausse — mais pas assez pour compenser la chute des volumes.</p>
+    </div>
+
+    <div class="card">
+      <h2>Vue macro : le pouvoir d'achat trinque</h2>
+      <div class="shareStats" style="margin-bottom:10px;">
+        <div class="box"><div class="v">+0,0 %</div><div class="l">PIB, T2 2026 — stagnation, après −0,2 % au T1</div></div>
+        <div class="box"><div class="v alt">−0,6 %</div><div class="l">pouvoir d'achat par ménage, T2 2026</div></div>
+      </div>
+      <p class="note">L'économie française stagne (+0,0 % au T2 2026, après un recul de −0,2 % au T1). Sur la même période, le pouvoir d'achat des ménages recule nettement (−0,6 % par unité de consommation), pénalisé par une inflation qui remonte (+1,0 % au T2) et par la détérioration des termes de l'échange liée à la flambée des prix de l'énergie sur les marchés mondiaux.</p>
+      <p class="note">Conséquence directe : les ménages réduisent leur consommation d'énergie et leur taux d'épargne recule (17,2 %, contre 17,9 % au trimestre précédent) — signe d'un budget de plus en plus tendu.</p>
+    </div>
+
+    <div class="card">
+      <h2>L'engrenage : chômage et fermetures d'entreprises</h2>
+      <div class="shareStats" style="margin-bottom:10px;">
+        <div class="box"><div class="v">8,3 %</div><div class="l">taux de chômage, T2 2026 — plus haut niveau depuis 2020</div></div>
+        <div class="box"><div class="v alt">+5 %</div><div class="l">défaillances d'entreprises, T2 2026 vs T2 2025</div></div>
+      </div>
+      <p class="note">Le chômage grimpe trimestre après trimestre (8,1 % au T1, 8,3 % au T2 2026) et l'Insee anticipe jusqu'à 8,6 % sur l'année. Plus de 70 000 défaillances d'entreprises sont attendues en 2026, avec une accélération marquée dans l'hébergement-restauration (+11 %) et le commerce automobile (+14 %) — des secteurs directement sensibles aux arbitrages de budget des ménages.</p>
+      <p class="note">Le mécanisme se referme : moins de pouvoir d'achat → moins de sorties au restaurant, moins de loisirs, moins de consommation → des commerces qui ferment → du chômage supplémentaire à indemniser, et moins de TVA collectée sur tout ce qui n'est plus dépensé. Une perte fiscale diffuse, plus difficile à chiffrer que la TICPE, mais qui pèse dans le même sens.</p>
+    </div>
+
+    <div class="card" style="background:linear-gradient(155deg, var(--tax-soft), var(--surface));">
+      <h2>Au final, qui gagne ?</h2>
+      <p class="note" style="font-size:13px; color:var(--ink);">Sur le carburant seul, l'État ne gagne pas plus : la TICPE est figée par litre, et les Français roulent moins. Mais la crise pétrolière pèse sur l'ensemble de l'économie — pouvoir d'achat en berne, croissance à l'arrêt, chômage en hausse, entreprises qui ferment. Chacun de ces effets grignote d'autres recettes (TVA, cotisations) et alourdit d'autres dépenses (allocations chômage, aides ciblées). <b>À l'échelle du budget de l'État, cette crise ressemble bien plus à une perte nette qu'à une aubaine fiscale.</b></p>
+    </div>
+
+    <div class="sources">
+      Chiffres (susceptibles d'être révisés) : prix du Brent et à la pompe, consommation de carburant et recettes de TICPE d'après
+      <a href="https://kohenavocats.com/prix-carburant-flambee-taxes-accise-tva-qui-gagne-texte-reel/" target="_blank" rel="noopener">Kohen Avocats</a>,
+      <a href="https://fr.headtopics.com/news/crise-petroliere-le-baril-franchit-la-barre-des-100-87670056" target="_blank" rel="noopener">headtopics</a>,
+      <a href="https://bourseinside.fr/economie/le-paradoxe-de-la-ticpe-pourquoi-letat-perd-de-largent-quand-le-prix-de-votre-plein-dessence-explose/" target="_blank" rel="noopener">Bourse Inside</a>,
+      <a href="https://www.journaldeleconomie.fr/carburants-aides-400-million-37-milliard/" target="_blank" rel="noopener">Le Journal de l'Économie</a> et
+      <a href="https://lenergeek.com/2026/05/13/carburant-etat-contraint-revoir-baisse-recettes-fiscales/" target="_blank" rel="noopener">L'EnerGeek</a> (2026).
+      PIB, pouvoir d'achat et chômage : Insee,
+      <a href="https://www.insee.fr/fr/statistiques/9039499" target="_blank" rel="noopener">informations rapides T2 2026</a> et
+      <a href="https://www.insee.fr/fr/statistiques/9032359" target="_blank" rel="noopener">chômage T2 2026</a>.
+      Défaillances d'entreprises : <a href="https://www.allianz-trade.fr/actualites/defaillances-entreprises-france-t2-2026.html" target="_blank" rel="noopener">Allianz Trade, T2 2026</a>.
+    </div>
+  </section>
+
+  <div class="sources">
+    Repères (susceptibles d'évoluer) : décomposition au 24/08/2026 (SP95) et 11/09/2026 (Gazole) d'après le Ministère de la Transition écologique (DGEC) via
+    <a href="https://www.connaissancedesenergies.org/fiche-pedagogique/structuration-des-prix-de-lessence-et-du-gazole-en-france" target="_blank" rel="noopener">Connaissance des Énergies</a>,
+    <a href="https://www.bobbycarottes.com/outils/decomposition-prix-carburants-france" target="_blank" rel="noopener">Bobby Carottes</a> et
+    <a href="https://data.roole.fr/budget-auto/prix-des-carburants/decomposition-du-prix-du-gasoil" target="_blank" rel="noopener">Roole</a> (17/09/2026).
+    Coût CEE (~0,16 €/L depuis le 01/01/2026) selon l'UFIP, cité par
+    <a href="https://www.connaissancedesenergies.org/afp/les-prix-des-carburants-vont-augmenter-de-4-6-centimes-par-litre-en-2026-en-raison-des-cee-251126" target="_blank" rel="noopener">Connaissance des Énergies (AFP)</a>.
+    Cours du Brent : <span id="brent-source-note">valeur du 18/09/2026, <a href="https://prixdubaril.com/" target="_blank" rel="noopener">prixdubaril.com</a></span> — mis à jour automatiquement chaque jour une fois l'appli hébergée en dehors de claude.ai.
+    Ces valeurs sont mises à jour périodiquement, pas en temps réel — un léger décalage avec le prix à votre pompe est normal.
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  // ---- reference data (see Sources at the bottom of the page) ----
+  var FUELS = {
+    gazole: { label:"Gazole", cotation0:1.048, distribution0:0.254, cee0:0.160, ticpe:0.607 },
+    sp95:   { label:"SP95",   cotation0:0.774, distribution0:0.255, cee0:0.160, ticpe:0.690 }
+  };
+  var BRENT_BASE = 102.55;        // $/baril — valeur de secours si brent.json est indisponible (ex : artifact claude.ai)
+  var BRENT_DATE = '18/09/2026';  // date de cette valeur de secours, format JJ/MM/AAAA
+  var AXIS_MAX = 2.8;   // €/L, échelle des colonnes
+
+  var fmt = function(n, d){ d = d===undefined?3:d; return n.toLocaleString('fr-FR', {minimumFractionDigits:d, maximumFractionDigits:d}); };
+  var fmtPct = function(n){ return (n>=0?'+':'') + Math.round(n) + ' %'; };
+  var euros = function(n){ return fmt(n,2) + ' €'; };
+  // accepte la virgule française aussi bien que le point
+  var parseNum = function(str){
+    if (str === null || str === undefined) return NaN;
+    var s = String(str).trim().replace(',', '.');
+    return s === '' ? NaN : parseFloat(s);
+  };
+
+  function computeBar(fuelKey, pct){
+    var f = FUELS[fuelKey];
+    var cotation = f.cotation0 * (1 + pct/100);
+    var distribution = f.distribution0;
+    var tvaProduit = 0.2 * (cotation + distribution);
+    var tvaTicpe = 0.2 * f.ticpe;
+    var ttc = cotation + distribution + tvaProduit + f.ticpe + tvaTicpe;
+    var taxes = f.ticpe + tvaProduit + tvaTicpe;
+    return { f:f, cotation:cotation, distribution:distribution, cee:f.cee0, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe, ttc:ttc, taxes:taxes,
+      surcout: (taxes/(cotation+distribution))*100, partFinale: (taxes/ttc)*100 };
+  }
+
+  function segments(r){
+    var cee = r.cee || 0;
+    var distNet = r.distribution - cee;
+    return [
+      { key:'cotation', label:'Cotation', value:r.cotation, color:'var(--c-cotation)' },
+      { key:'dist', label:'Distribution', value:distNet, color:'var(--c-dist)' },
+      { key:'ticpe', label:'Accise', value:r.ticpe, color:'var(--c-ticpe)' },
+      { key:'cee', label:'CEE', value:cee, color:'var(--c-cee)' },
+      { key:'tvaticpe', label:'TVA/Accise', value:r.tvaTicpe, color:'var(--c-tvaticpe)' },
+      { key:'tvaprod', label:'TVA produit', value:r.tvaProduit, color:'var(--c-tvaprod)' }
+    ];
+  }
+
+  function renderShaft(el, segs, scaleTotal, unitFmt){
+    el.innerHTML = '';
+    segs.forEach(function(s){
+      var pctHeight = (s.value/scaleTotal)*100;
+      var div = document.createElement('div');
+      div.className = 'seg';
+      div.style.height = pctHeight + '%';
+      div.style.background = s.color;
+      div.title = s.label + ' : ' + unitFmt(s.value);
+      if (pctHeight > 7) div.textContent = unitFmt(s.value);
+      el.appendChild(div);
+    });
+  }
+
+  // ---- axis ----
+  (function buildAxis(){
+    var axis = document.getElementById('sim-axis');
+    var steps = [2.8,2.4,2.0,1.6,1.2,0.8,0.4,0];
+    axis.innerHTML = steps.map(function(v){ return '<div>' + fmt(v,1) + '</div>'; }).join('');
+  })();
+
+  // ---- tabs ----
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active')});
+      t.classList.add('active');
+      document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+      if (t.dataset.tab === 'partage') buildShareText();
+    });
+  });
+
+  // ---- simulateur ----
+  var slider = document.getElementById('brent-slider');
+  slider.addEventListener('input', renderSim);
+
+  // ---- repère "prix du jour" sur le curseur ----
+  (function setupTodayMark(){
+    var mark = document.getElementById('brent-today-mark');
+    var min = parseFloat(slider.min), max = parseFloat(slider.max);
+    var pct = ((0 - min) / (max - min)) * 100;
+    mark.style.left = pct + '%';
+    mark.title = 'Prix du jour (' + Math.round(BRENT_BASE) + ' $ / baril) — cliquer pour y revenir';
+    mark.addEventListener('click', function(){
+      slider.value = 0;
+      renderSim();
+    });
+  })();
+
+  function renderSim(){
+    var pct = parseInt(slider.value, 10);
+    ['gazole','sp95'].forEach(function(key){
+      var r = computeBar(key, pct);
+      document.getElementById('bar-' + key + '-total').textContent = euros(r.ttc);
+      renderShaft(document.getElementById('bar-' + key), segments(r), AXIS_MAX, function(v){ return fmt(v,3); });
+      document.getElementById('stat-surcout-' + key).textContent = fmtPct(r.surcout);
+    });
+
+    var brentNow = BRENT_BASE * (1 + pct/100);
+    document.getElementById('brent-label').textContent = Math.round(brentNow) + ' $ / baril';
+    document.getElementById('brent-pct').textContent = 'Variation : ' + (pct>=0?'+':'') + pct + ' % (Brent réf. ' + Math.round(BRENT_BASE) + ' $ au ' + BRENT_DATE + ') — seule la « Cotation Rotterdam » bouge ; distribution, CEE et TICPE restent fixes.';
+  }
+
+  // ---- mon plein ----
+  var HIST_KEY = 'partetat_pleins_v2';
+  function loadHist(){ try{ return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); }catch(e){ return []; } }
+  function saveHist(list){ try{ localStorage.setItem(HIST_KEY, JSON.stringify(list.slice(0,30))); }catch(e){} }
+
+  var dateInput = document.getElementById('plein-date');
+  (function(){ var d = new Date(); dateInput.value = d.toISOString().slice(0,10); })();
+
+  function computePlein(fuelKey, prixLitre){
+    var f = FUELS[fuelKey];
+    var tvaTicpe = 0.2 * f.ticpe;
+    var R = prixLitre - f.ticpe - tvaTicpe;
+    var htHorsTicpe = R / 1.2;
+    var tvaProduit = R - htHorsTicpe;
+    var distribution = f.distribution0;
+    var cotation = htHorsTicpe - distribution;
+    var taxes = f.ticpe + tvaProduit + tvaTicpe;
+    return { f:f, cotation:cotation, distribution:distribution, cee:f.cee0, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe,
+      prixLitre:prixLitre, taxes:taxes,
+      surcout: (cotation+distribution) > 0 ? (taxes/(cotation+distribution))*100 : 0,
+      partFinale: (taxes/prixLitre)*100 };
+  }
+
+  function updateTotalPaye(){
+    var fuelKey = document.getElementById('plein-fuel').value;
+    var prix = parseNum(document.getElementById('plein-prix').value);
+    var litres = parseNum(document.getElementById('plein-litres').value);
+    var el = document.getElementById('plein-total-paye');
+    var elTaxes = document.getElementById('plein-dont-taxes');
+    if (prix > 0 && litres > 0) {
+      el.value = euros(prix*litres);
+      var r = computePlein(fuelKey, prix);
+      elTaxes.value = euros(r.taxes*litres);
+    } else {
+      el.value = '—';
+      elTaxes.value = '—';
+    }
+  }
+  document.getElementById('plein-prix').addEventListener('input', updateTotalPaye);
+  document.getElementById('plein-litres').addEventListener('input', updateTotalPaye);
+  document.getElementById('plein-fuel').addEventListener('change', updateTotalPaye);
+
+  var lastPlein = null;
+
+  function doCompute(requireLitres){
+    var fuelKey = document.getElementById('plein-fuel').value;
+    var prix = parseNum(document.getElementById('plein-prix').value);
+    var litres = parseNum(document.getElementById('plein-litres').value);
+    if (!prix || prix <= 0) return null;
+    if (requireLitres && (!litres || litres <= 0)) return null;
+    var r = computePlein(fuelKey, prix);
+    r.litres = litres > 0 ? litres : 0;
+    r.date = document.getElementById('plein-date').value;
+    return r;
+  }
+
+  document.getElementById('plein-calc').addEventListener('click', function(){
+    var r = doCompute(true);
+    if (!r) { showToast('Indique un prix au litre et un nombre de litres valides'); return; }
+    lastPlein = r;
+
+    document.getElementById('plein-result').style.display = 'block';
+    var litres = r.litres || 1; // multiply per-liter amounts by litres for totals (defaults to 1 if not given)
+    var segs = segments({ cotation:r.cotation*litres, distribution:r.distribution*litres, cee:r.cee*litres, tvaProduit:r.tvaProduit*litres, ticpe:r.ticpe*litres, tvaTicpe:r.tvaTicpe*litres });
+    var totalPaye = r.prixLitre * litres;
+    renderShaft(document.getElementById('pbar'), segs, totalPaye, function(v){ return fmt(v,2)+'€'; });
+    document.getElementById('pbar-total').textContent = euros(totalPaye);
+    document.getElementById('pbar-label').textContent = r.f.label + (r.litres?' · ' + fmt(r.litres,1) + ' L':' (1 L)');
+    document.getElementById('pbar-legend').innerHTML = segs.map(function(s){
+      return '<div class="li"><span class="dot" style="background:'+s.color+'"></span>' + s.label + ' : <b>' + fmt(s.value,2) + ' €</b></div>';
+    }).join('');
+
+    document.getElementById('pstat-surcout').textContent = fmtPct(r.surcout);
+    document.getElementById('pstat-total').textContent = euros(r.taxes*litres);
+
+    var hist = loadHist();
+    hist.unshift({ date:r.date, fuel:r.f.label, prix:r.prixLitre, litres:r.litres, montant:totalPaye, taxes:r.taxes*r.litres, surcout:r.surcout });
+    saveHist(hist);
+    renderHist();
+    showToast('Plein enregistré');
+  });
+
+  function dmyToCompare(iso){ return iso || ''; } // dates ISO (YYYY-MM-DD) se comparent déjà en texte
+
+  function renderHist(){
+    var hist = loadHist();
+    var summaryEl = document.getElementById('plein-hist-summary');
+    var detailsEl = document.getElementById('plein-hist-details');
+    var listEl = document.getElementById('plein-history');
+
+    if (!hist.length){
+      summaryEl.innerHTML = '<div class="empty">Aucun plein enregistré pour l\'instant.</div>';
+      detailsEl.style.display = 'none';
+      listEl.innerHTML = '';
+      return;
+    }
+
+    var dates = hist.map(function(h){ return h.date; }).filter(Boolean).sort();
+    var dMin = dates[0], dMax = dates[dates.length-1];
+    var fmtD = function(iso){ return iso ? iso.split('-').reverse().join('/') : '?'; };
+    var totalMontant = hist.reduce(function(s,h){ return s + (h.montant||0); }, 0);
+    var totalTaxes = hist.reduce(function(s,h){ return s + (h.taxes||0); }, 0);
+    var surcoutMoyen = totalMontant > totalTaxes ? (totalTaxes/(totalMontant-totalTaxes))*100 : 0;
+
+    summaryEl.innerHTML = '<b>' + hist.length + ' plein' + (hist.length>1?'s':'') + ' enregistré' + (hist.length>1?'s':'') + ' du ' + fmtD(dMin) + ' au ' + fmtD(dMax) + '</b><br>' +
+      fmt(totalMontant,2) + ' € payés au total, dont ' + fmt(totalTaxes,2) + ' € pour l\'État (' + fmtPct(surcoutMoyen) + ')';
+
+    detailsEl.style.display = 'block';
+    listEl.innerHTML = hist.map(function(h){
+      var dateStr = h.date ? h.date.split('-').reverse().join('/').slice(0,5) : '';
+      return '<div class="histitem"><div class="h-left">'+dateStr+' · '+h.fuel+' · '+fmt(h.litres,1)+' L · '+fmt(h.montant||(h.prix*h.litres),2)+' € payés</div>' +
+        '<div class="h-right">'+fmt(h.taxes,2)+' € à l\'État<small>'+fmtPct(h.surcout)+'</small></div></div>';
+    }).join('');
+  }
+
+  // ---- partage ----
+  function currentBasis(){
+    var formR = doCompute();
+    if (formR) return formR;
+    if (lastPlein) return lastPlein;
+    var pct = parseInt(slider.value,10);
+    var r = computeBar('gazole', pct);
+    r.prixLitre = r.ttc; r.litres = 0;
+    return r;
+  }
+
+  function buildShareText(){
+    var basis = currentBasis();
+    var litres = basis.litres || 0;
+    var msg;
+    if (litres) {
+      msg = "Incroyable ce que je donne à l'État dès que je prends de l'essence. Calcule ton propre plein :";
+    } else {
+      msg = "Incroyable ce que l'État prend sur chaque plein de " + basis.f.label + ". Calcule ton propre plein :";
+    }
+    document.getElementById('share-text').textContent = msg;
+
+    var montantPaye = litres ? basis.prixLitre*litres : basis.prixLitre;
+    var totalEtat = litres ? basis.taxes*litres : basis.taxes;
+    document.getElementById('share-prix').textContent = euros(montantPaye);
+    document.getElementById('share-prix-label').textContent = basis.f.label + (litres ? ' — montant payé' : ' — estimation (aucun plein enregistré)');
+    document.getElementById('share-taxes').textContent = euros(totalEtat) + ' · ' + fmtPct(basis.surcout);
+
+    document.getElementById('link-box').textContent = location.href;
+    window._shareFullText = msg + '\n' +
+      basis.f.label + ' : ' + euros(montantPaye) + ' payés — État : ' + euros(totalEtat) + ' (' + fmtPct(basis.surcout) + ')\n' +
+      location.href;
+
+    updateSmsHref();
+  }
+
+  document.getElementById('link-toggle').addEventListener('click', function(){
+    var box = document.getElementById('link-box');
+    var showing = box.style.display !== 'none';
+    box.style.display = showing ? 'none' : 'block';
+    this.textContent = showing ? 'Afficher le lien' : 'Masquer le lien';
+  });
+
+  function smsSeparator(){
+    var ua = navigator.userAgent || '';
+    return /iPhone|iPad|iPod|Macintosh/.test(ua) ? '&' : '?';
+  }
+
+  // le bouton SMS est un vrai lien <a href="sms:...">, en secours pour les
+  // navigateurs sans sélecteur de partage natif (voir plus bas)
+  function updateSmsHref(){
+    var sep = smsSeparator();
+    var text = window._shareFullText || '';
+    document.getElementById('sms-btn').setAttribute('href', 'sms:' + sep + 'body=' + encodeURIComponent(text));
+  }
+  // Copie le texte dans le presse-papiers via un <textarea> temporaire
+  // (execCommand, plus largement supporté que l'API Clipboard moderne,
+  // qui peut être bloquée selon le contexte) et affiche un message clair
+  // dans tous les cas, pour qu'on sache toujours ce qui s'est passé.
+  function copyFallback(text, reason){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch(err) {}
+    document.body.removeChild(ta);
+    if (ok) {
+      showToast('Message copié — ouvre tes SMS et colle-le');
+    } else {
+      showToast('Partage indisponible sur ce navigateur' + (reason ? ' (' + reason + ')' : ''));
+    }
+  }
+
+  document.getElementById('sms-btn').addEventListener('click', function(e){
+    // on ne laisse jamais partir la navigation sms: automatiquement : elle
+    // n'est pas fiable selon les téléphones et versions de Chrome (parfois
+    // ignorée silencieusement, sans erreur)
+    e.preventDefault();
+
+    // recalcule le message juste avant l'envoi, au cas où le plein ou le
+    // carburant aurait changé depuis l'ouverture de l'onglet
+    buildShareText();
+    var text = window._shareFullText || '';
+
+    if (navigator.share) {
+      navigator.share({ text: text }).catch(function(err){
+        // AbortError = l'utilisateur a annulé volontairement le partage
+        if (err && err.name === 'AbortError') return;
+        copyFallback(text, err && err.name);
+      });
+    } else {
+      copyFallback(text, 'non supporté');
+    }
+  });
+
+  var toastTimer;
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  renderSim();
+  renderHist();
+
+  // ---- cours du Brent en direct (si disponible) ----
+  // Sur claude.ai (artifact), brent.json n'existe pas : l'appel échoue et on
+  // garde silencieusement la valeur de secours ci-dessus. Une fois l'appli
+  // hébergée sur GitHub Pages, un workflow GitHub Actions régénère ce fichier
+  // chaque jour (voir .github/workflows/update-brent.yml) : tous les
+  // visiteurs reçoivent alors automatiquement le cours du jour.
+  fetch('./brent.json', { cache: 'no-store' }).then(function(r){
+    if (!r.ok) throw new Error('brent.json indisponible');
+    return r.json();
+  }).then(function(data){
+    if (typeof data.price === 'number' && data.price > 0 && data.price < 400) {
+      BRENT_BASE = data.price;
+      if (data.date) {
+        var d = new Date(data.date);
+        if (!isNaN(d)) {
+          var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+          BRENT_DATE = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+      }
+      slider.value = 0;
+      renderSim();
+      var noteEl = document.getElementById('brent-source-note');
+      if (noteEl) noteEl.textContent = 'valeur du ' + BRENT_DATE + ', ' + (data.source || 'API');
+    }
+  }).catch(function(){ /* pas de brent.json : valeur de secours conservée */ });
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
