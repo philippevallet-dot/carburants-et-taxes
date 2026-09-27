@@ -65,12 +65,14 @@ section.panel.active{display:block;}
 .card h2{font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 12px; font-weight:600;}
 
 /* ---- stacked-column chart ---- */
-.chartrow{display:flex; gap:18px; align-items:flex-end;}
-.axis{display:flex; flex-direction:column; justify-content:space-between; height:260px; padding-bottom:22px; font-size:10.5px; color:var(--muted); text-align:right; width:34px;}
+.chartrow{display:flex; gap:18px; align-items:flex-start;}
+.axis{position:relative; height:300px; margin-top:24px; font-size:10.5px; color:var(--muted); text-align:right; width:34px; flex-shrink:0;}
+.axis div{position:absolute; right:0; transform:translateY(50%); line-height:1;}
 .barcol{flex:1; display:flex; flex-direction:column; align-items:center; min-width:0;}
-.bartotal{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; color:var(--total-color); margin-bottom:6px; white-space:nowrap;}
-.barshaft{width:100%; max-width:96px; height:260px; border-radius:6px 6px 3px 3px; overflow:hidden; display:flex; flex-direction:column-reverse; border:1px solid var(--border); background:var(--surface-2);}
+.bartotal{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; line-height:18px; height:18px; color:var(--total-color); margin-bottom:6px; white-space:nowrap;}
+.barshaft{width:100%; max-width:96px; height:300px; border-radius:6px 6px 3px 3px; overflow:hidden; display:flex; flex-direction:column-reverse; border:1px solid var(--border); background:var(--surface-2);}
 .seg{width:100%; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:600; color:#fff; overflow:hidden; padding:0 2px; text-align:center; line-height:1.15;}
+.seg.sm{font-size:8.5px; font-weight:700; line-height:1; text-shadow:0 0 2px rgba(0,0,0,.35);}
 .barlabel{margin-top:8px; font-size:12.5px; font-weight:600; color:var(--muted);}
 .barcaption{margin-top:4px; font-size:11px; color:var(--muted); text-align:center;}
 .barcaption b{color:var(--tax);}
@@ -349,6 +351,7 @@ section.panel.active{display:block;}
   var BRENT_BASE = 102.55;        // $/baril — valeur de secours si brent.json est indisponible (ex : artifact claude.ai)
   var BRENT_DATE = '18/09/2026';  // date de cette valeur de secours, format JJ/MM/AAAA
   var AXIS_MAX = 2.8;   // €/L, échelle des colonnes
+  var SHAFT_H = 300;    // px, hauteur des colonnes (doit correspondre à .barshaft)
 
   var fmt = function(n, d){ d = d===undefined?3:d; return n.toLocaleString('fr-FR', {minimumFractionDigits:d, maximumFractionDigits:d}); };
   var fmtPct = function(n){ return (n>=0?'+':'') + Math.round(n) + ' %'; };
@@ -394,7 +397,9 @@ section.panel.active{display:block;}
       div.style.height = pctHeight + '%';
       div.style.background = s.color;
       div.title = s.label + ' : ' + unitFmt(s.value);
-      if (pctHeight > 7) div.textContent = unitFmt(s.value);
+      var px = pctHeight / 100 * SHAFT_H;
+      if (px >= 16) div.textContent = unitFmt(s.value);
+      else if (px >= 9) { div.textContent = unitFmt(s.value); div.classList.add('sm'); }
       el.appendChild(div);
     });
   }
@@ -403,7 +408,7 @@ section.panel.active{display:block;}
   (function buildAxis(){
     var axis = document.getElementById('sim-axis');
     var steps = [2.8,2.4,2.0,1.6,1.2,0.8,0.4,0];
-    axis.innerHTML = steps.map(function(v){ return '<div>' + fmt(v,1) + '</div>'; }).join('');
+    axis.innerHTML = steps.map(function(v){ return '<div style="bottom:' + (v/AXIS_MAX*100) + '%">' + fmt(v,1) + '</div>'; }).join('');
   })();
 
   // ---- tabs ----
@@ -701,7 +706,6 @@ section.panel.active{display:block;}
   }).catch(function(){ /* pas de brent.json : valeur de secours conservée */ });
 })();
 </script>
-
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){

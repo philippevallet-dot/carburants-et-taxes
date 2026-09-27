@@ -1,6 +1,6 @@
 // Service worker minimal : mise en cache de l'app pour un fonctionnement
 // hors-ligne et une installation reconnue comme PWA valide (Lighthouse).
-const CACHE_NAME = 'carburants-taxes-v1';
+const CACHE_NAME = 'carburants-taxes-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -25,15 +25,15 @@ self.addEventListener('activate', function (event) {
   self.clients.claim();
 });
 
+// Réseau d'abord (pour toujours afficher la dernière version et le dernier cours du Brent),
+// cache en secours si hors-ligne.
 self.addEventListener('fetch', function (event) {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      var fetchPromise = fetch(event.request).then(function (resp) {
-        var respClone = resp.clone();
-        caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, respClone); });
-        return resp;
-      }).catch(function () { return cached; });
-      return cached || fetchPromise;
-    })
+    fetch(event.request).then(function (resp) {
+      var respClone = resp.clone();
+      caches.open(CACHE_NAME).then(function (cache) { cache.put(event.request, respClone); });
+      return resp;
+    }).catch(function () { return caches.match(event.request); })
   );
 });
