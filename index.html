@@ -17,7 +17,7 @@
   --ink:#142420; --muted:#5E7268; --border:#DCE6DE;
   --cost:#1E7A5F; --cost-soft:#DCEFE7; --cost-dark:#14513F;
   --tax:#B23A2E; --tax-soft:#F7E1DD;
-  --c-cotation:#3D6FB4; --c-dist:#4C9A6A; --c-cee:#2E7A4E;
+  --c-cotation:#3D6FB4; --c-dist:#4C9A6A; --c-cee:#C47F1E; --c-tvacee:#E0AC5C;
   --c-tvaprod:#8FBFE0; --c-ticpe:#7B5EA7; --c-tvaticpe:#D98A8A;
   --total-color:#C23B2E;
   --shadow: 0 1px 2px rgba(20,36,32,.06), 0 8px 24px rgba(20,36,32,.06);
@@ -28,7 +28,7 @@
     --ink:#E8F0EA; --muted:#8FA79B; --border:#223028;
     --cost:#53DBAA; --cost-soft:#173A2E; --cost-dark:#8FF0CB;
     --tax:#FF8A6E; --tax-soft:#3A1E19;
-    --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#4E9C6E;
+    --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#C98A2E; --c-tvacee:#E3B96B;
     --c-tvaprod:#3E5A73; --c-ticpe:#A88FD6; --c-tvaticpe:#E3A5A0;
     --total-color:#FF8A6E;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
@@ -39,7 +39,7 @@
   --ink:#E8F0EA; --muted:#8FA79B; --border:#223028;
   --cost:#53DBAA; --cost-soft:#173A2E; --cost-dark:#8FF0CB;
   --tax:#FF8A6E; --tax-soft:#3A1E19;
-  --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#4E9C6E;
+  --c-cotation:#6C9BDB; --c-dist:#6BBE8B; --c-cee:#C98A2E; --c-tvacee:#E3B96B;
   --c-tvaprod:#3E5A73; --c-ticpe:#A88FD6; --c-tvaticpe:#E3A5A0;
   --total-color:#FF8A6E;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
@@ -160,10 +160,11 @@ section.panel.active{display:block;}
 
       <div class="legend2">
         <div class="li"><span class="dot" style="background:var(--c-cotation)"></span>Cotation Rotterdam</div>
-        <div class="li"><span class="dot" style="background:var(--c-dist)"></span>Coût de distribution</div>
+        <div class="li"><span class="dot" style="background:var(--c-dist)"></span>Distribution (hors CEE)</div>
         <div class="li"><span class="dot" style="background:var(--c-ticpe)"></span>Accise</div>
-        <div class="li"><span class="dot" style="background:var(--c-cee)"></span>dont CEE (~0,16 €/L)</div>
+        <div class="li"><span class="dot" style="background:var(--c-cee)"></span>CEE (~0,16 €/L)</div>
         <div class="li"><span class="dot" style="background:var(--c-tvaticpe)"></span>TVA sur accise</div>
+        <div class="li"><span class="dot" style="background:var(--c-tvacee)"></span>TVA sur CEE</div>
         <div class="li"><span class="dot" style="background:var(--c-tvaprod)"></span>TVA sur produit</div>
       </div>
 
@@ -178,14 +179,14 @@ section.panel.active{display:block;}
     </div>
 
     <div class="card">
-      <h2>Ce que prend l'État</h2>
+      <h2>Ce qu'impose l'État</h2>
       <div class="chartrow" style="align-items:stretch; gap:10px;">
         <div class="shareStats" style="flex:1">
           <div class="box"><div class="v" id="stat-surcout-gazole">—</div><div class="l">Gazole : ajouté au coût réel</div></div>
           <div class="box"><div class="v" id="stat-surcout-sp95">—</div><div class="l">SP95 : ajouté au coût réel</div></div>
         </div>
       </div>
-      <p class="note">Exemple : si le coût réel est de 1,20 €, un « +100 % » signifie que l'État ajoute 1,20 € de taxes, pour un prix final de 2,40 €.</p>
+      <p class="note">Exemple : si le coût réel est de 1,20 €, un « +100 % » signifie que l'État ajoute 1,20 € de taxes et prélèvements (accise, TVA, CEE), pour un prix final de 2,40 €.</p>
     </div>
   </section>
 
@@ -238,8 +239,8 @@ section.panel.active{display:block;}
       </div>
       <div class="chartrow" style="margin-top:14px;">
         <div class="shareStats" style="flex:1">
-          <div class="box"><div class="v" id="pstat-surcout">—</div><div class="l">de plus que le coût réel, à cause des taxes</div></div>
-          <div class="box"><div class="v alt" id="pstat-total">—</div><div class="l">reversés à l'État sur ce plein</div></div>
+          <div class="box"><div class="v" id="pstat-surcout">—</div><div class="l">de plus que le coût réel, à cause des taxes et prélèvements</div></div>
+          <div class="box"><div class="v alt" id="pstat-total">—</div><div class="l">de taxes et prélèvements sur ce plein</div></div>
         </div>
       </div>
     </div>
@@ -332,7 +333,7 @@ section.panel.active{display:block;}
     <a href="https://www.connaissancedesenergies.org/fiche-pedagogique/structuration-des-prix-de-lessence-et-du-gazole-en-france" target="_blank" rel="noopener">Connaissance des Énergies</a>,
     <a href="https://www.bobbycarottes.com/outils/decomposition-prix-carburants-france" target="_blank" rel="noopener">Bobby Carottes</a> et
     <a href="https://data.roole.fr/budget-auto/prix-des-carburants/decomposition-du-prix-du-gasoil" target="_blank" rel="noopener">Roole</a> (17/09/2026).
-    Coût CEE (~0,16 €/L depuis le 01/01/2026) selon l'UFIP, cité par
+    CEE (Certificats d'Économie d'Énergie) : obligation imposée par l'État aux distributeurs de carburant, répercutée à la pompe (~0,16 €/L depuis le 01/01/2026, TVA en plus). Ce n'est pas une taxe versée au budget de l'État — les sommes financent des primes d'économies d'énergie — mais c'est un surcoût réglementaire : l'appli le compte donc avec les taxes et prélèvements. Montant selon l'UFIP, cité par
     <a href="https://www.connaissancedesenergies.org/afp/les-prix-des-carburants-vont-augmenter-de-4-6-centimes-par-litre-en-2026-en-raison-des-cee-251126" target="_blank" rel="noopener">Connaissance des Énergies (AFP)</a>.
     Cours du Brent : <span id="brent-source-note">valeur du 18/09/2026, <a href="https://prixdubaril.com/" target="_blank" rel="noopener">prixdubaril.com</a></span> — mis à jour automatiquement chaque jour une fois l'appli hébergée en dehors de claude.ai.
     Ces valeurs sont mises à jour périodiquement, pas en temps réel — un léger décalage avec le prix à votre pompe est normal.
@@ -366,13 +367,16 @@ section.panel.active{display:block;}
   function computeBar(fuelKey, pct){
     var f = FUELS[fuelKey];
     var cotation = f.cotation0 * (1 + pct/100);
-    var distribution = f.distribution0;
-    var tvaProduit = 0.2 * (cotation + distribution);
+    var distribution = f.distribution0;          // coût de distribution publié, CEE compris
+    var cee = f.cee0;
+    var coutReel = cotation + distribution - cee; // CEE = prélèvement imposé par l'État, sorti du coût réel
+    var tvaProduit = 0.2 * coutReel;
+    var tvaCee = 0.2 * cee;
     var tvaTicpe = 0.2 * f.ticpe;
-    var ttc = cotation + distribution + tvaProduit + f.ticpe + tvaTicpe;
-    var taxes = f.ticpe + tvaProduit + tvaTicpe;
-    return { f:f, cotation:cotation, distribution:distribution, cee:f.cee0, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe, ttc:ttc, taxes:taxes,
-      surcout: (taxes/(cotation+distribution))*100, partFinale: (taxes/ttc)*100 };
+    var taxes = f.ticpe + tvaTicpe + cee + tvaCee + tvaProduit;
+    var ttc = coutReel + taxes;
+    return { f:f, cotation:cotation, distribution:distribution, cee:cee, tvaCee:tvaCee, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe, ttc:ttc, taxes:taxes,
+      surcout: (taxes/coutReel)*100, partFinale: (taxes/ttc)*100 };
   }
 
   function segments(r){
@@ -380,11 +384,12 @@ section.panel.active{display:block;}
     var distNet = r.distribution - cee;
     return [
       { key:'cotation', label:'Cotation', value:r.cotation, color:'var(--c-cotation)' },
-      { key:'dist', label:'Distribution', value:distNet, color:'var(--c-dist)' },
+      { key:'dist', label:'Distribution (hors CEE)', value:distNet, color:'var(--c-dist)' },
       { key:'ticpe', label:'Accise', value:r.ticpe, color:'var(--c-ticpe)' },
+      { key:'tvaticpe', label:'TVA sur accise', value:r.tvaTicpe, color:'var(--c-tvaticpe)' },
       { key:'cee', label:'CEE', value:cee, color:'var(--c-cee)' },
-      { key:'tvaticpe', label:'TVA/Accise', value:r.tvaTicpe, color:'var(--c-tvaticpe)' },
-      { key:'tvaprod', label:'TVA produit', value:r.tvaProduit, color:'var(--c-tvaprod)' }
+      { key:'tvacee', label:'TVA sur CEE', value:r.tvaCee || 0, color:'var(--c-tvacee)' },
+      { key:'tvaprod', label:'TVA sur produit', value:r.tvaProduit, color:'var(--c-tvaprod)' }
     ];
   }
 
@@ -465,14 +470,17 @@ section.panel.active{display:block;}
     var f = FUELS[fuelKey];
     var tvaTicpe = 0.2 * f.ticpe;
     var R = prixLitre - f.ticpe - tvaTicpe;
-    var htHorsTicpe = R / 1.2;
-    var tvaProduit = R - htHorsTicpe;
+    var htHorsTicpe = R / 1.2;                    // cotation + distribution (CEE compris)
     var distribution = f.distribution0;
+    var cee = f.cee0;
     var cotation = htHorsTicpe - distribution;
-    var taxes = f.ticpe + tvaProduit + tvaTicpe;
-    return { f:f, cotation:cotation, distribution:distribution, cee:f.cee0, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe,
+    var coutReel = htHorsTicpe - cee;
+    var tvaCee = 0.2 * cee;
+    var tvaProduit = 0.2 * coutReel;
+    var taxes = f.ticpe + tvaTicpe + cee + tvaCee + tvaProduit;
+    return { f:f, cotation:cotation, distribution:distribution, cee:cee, tvaCee:tvaCee, tvaProduit:tvaProduit, ticpe:f.ticpe, tvaTicpe:tvaTicpe,
       prixLitre:prixLitre, taxes:taxes,
-      surcout: (cotation+distribution) > 0 ? (taxes/(cotation+distribution))*100 : 0,
+      surcout: coutReel > 0 ? (taxes/coutReel)*100 : 0,
       partFinale: (taxes/prixLitre)*100 };
   }
 
@@ -516,7 +524,7 @@ section.panel.active{display:block;}
 
     document.getElementById('plein-result').style.display = 'block';
     var litres = r.litres || 1; // multiply per-liter amounts by litres for totals (defaults to 1 if not given)
-    var segs = segments({ cotation:r.cotation*litres, distribution:r.distribution*litres, cee:r.cee*litres, tvaProduit:r.tvaProduit*litres, ticpe:r.ticpe*litres, tvaTicpe:r.tvaTicpe*litres });
+    var segs = segments({ cotation:r.cotation*litres, distribution:r.distribution*litres, cee:r.cee*litres, tvaCee:r.tvaCee*litres, tvaProduit:r.tvaProduit*litres, ticpe:r.ticpe*litres, tvaTicpe:r.tvaTicpe*litres });
     var totalPaye = r.prixLitre * litres;
     renderShaft(document.getElementById('pbar'), segs, totalPaye, function(v){ return fmt(v,2)+'€'; });
     document.getElementById('pbar-total').textContent = euros(totalPaye);
@@ -598,7 +606,7 @@ section.panel.active{display:block;}
 
     document.getElementById('link-box').textContent = location.href;
     window._shareFullText = msg + '\n' +
-      basis.f.label + ' : ' + euros(montantPaye) + ' payés — État : ' + euros(totalEtat) + ' (' + fmtPct(basis.surcout) + ')\n' +
+      basis.f.label + ' : ' + euros(montantPaye) + ' payés — taxes & prélèvements : ' + euros(totalEtat) + ' (' + fmtPct(basis.surcout) + ')\n' +
       location.href;
 
     updateSmsHref();
