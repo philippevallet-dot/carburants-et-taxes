@@ -22,8 +22,8 @@ jobs:
           response=$(curl -s "https://api.oilpriceapi.com/v1/prices/latest?by_code=BRENT_CRUDE_USD" \
             -H "Authorization: Token $OILPRICE_API_KEY")
 
-          price=$(echo "$response" | jq -r '.data.price // empty')
-          asof=$(echo "$response" | jq -r '.data.as_of // empty')
+          price=$(echo "$response" | jq -r 'if type=="array" then .[0].data.price else .data.price end // empty')
+          asof=$(echo "$response" | jq -r 'if type=="array" then .[0].data.as_of else .data.as_of end // empty')
 
           if [ -z "$price" ]; then
             echo "Réponse API invalide, on garde brent.json inchangé :"
