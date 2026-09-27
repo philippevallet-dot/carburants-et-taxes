@@ -1,9 +1,10 @@
-name: Mise à jour quotidienne du cours du Brent
+name: Mise à jour quotidienne du Brent et des prix à la pompe
 
 on:
   schedule:
+    # 06:00 UTC chaque jour (≈ 08:00 heure de Paris en été, 07:00 en hiver)
     - cron: '0 6 * * *'
-  workflow_dispatch: {}
+  workflow_dispatch: {}   # permet de le lancer manuellement depuis l'onglet Actions
 
 permissions:
   contents: write
@@ -35,13 +36,43 @@ jobs:
             '{price: $price, date: $date, source: $source}' > brent.json
           cat brent.json
 
-      - name: Publier si le fichier a changé
+      - name: Récupérer les prix moyens à la pompe
+        run: |
+          set -e
+          # Moyenne nationale des prix déclarés par les stations (données publiques du gouvernement).
+          # Les valeurs hors de 1 à 4 €/L (erreurs de saisie) sont ignorées.
+          API="https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records"
+          moyenne() {
+            curl -s --get "$API" \
+              --data-urlencode "select=avg($1) as v, count($1) as n" \
+              --data-urlencode "where=$1 > 1 and $1 < 4" \
+              --data-urlencode "limit=1"
+          }
+          g=$(moyenne gazole_prix); s=$(moyenne sp95_prix); e=$(moyenne e10_prix)
+          gv=$(echo "$g" | jq -r '.results[0].v // empty'); gn=$(echo "$g" | jq -r '.results[0].n // 0')
+          sv=$(echo "$s" | jq -r '.results[0].v // empty')
+          ev=$(echo "$e" | jq -r '.results[0].v // empty')
+
+          if [ -z "$gv" ] || [ -z "$sv" ]; then
+            echo "Réponse API invalide, on garde prix.json inchangé :"
+            echo "$g"; echo "$s"
+            exit 0
+          fi
+
+          jq -n --argjson g "$gv" --argjson s "$sv" --arg e "$ev" --argjson n "$gn" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg source "data.economie.gouv.fr" \
+            '{gazole: ($g*1000|round/1000), sp95: ($s*1000|round/1000),
+              e10: (if $e == "" then null else ($e|tonumber*1000|round/1000) end),
+              stations: $n, date: $date, source: $source}' > prix.json
+          cat prix.json
+
+      - name: Publier si les fichiers ont changé
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- brent.json; then
-            git add brent.json
-            git commit -m "Mise à jour automatique du cours du Brent"
+          git add brent.json prix.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Mise à jour automatique du Brent et des prix à la pompe"
             git push
           else
             echo "Aucun changement."

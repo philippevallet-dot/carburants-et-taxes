@@ -147,12 +147,12 @@ section.panel.active{display:block;}
       <div class="chartrow">
         <div class="axis" id="sim-axis"></div>
         <div class="barcol">
-          <div class="bartotal mono" id="bar-gazole-total">2,291 €</div>
+          <div class="bartotal mono" id="bar-gazole-total">2,40 €</div>
           <div class="barshaft" id="bar-gazole"></div>
           <div class="barlabel">Gazole</div>
         </div>
         <div class="barcol">
-          <div class="bartotal mono" id="bar-sp95-total">2,063 €</div>
+          <div class="bartotal mono" id="bar-sp95-total">2,22 €</div>
           <div class="barshaft" id="bar-sp95"></div>
           <div class="barlabel">SP95</div>
         </div>
@@ -169,7 +169,7 @@ section.panel.active{display:block;}
       </div>
 
       <div class="sliderrow">
-        <label><span>Cours du Brent (référence Rotterdam)</span><span class="brentval mono" id="brent-label">103 $ / baril</span></label>
+        <label><span>Cours du Brent (référence Rotterdam)</span><span class="brentval mono" id="brent-label">104 $ / baril</span></label>
         <div class="sliderwrap">
           <input type="range" id="brent-slider" min="-40" max="60" value="0" step="1">
           <div class="slider-today" id="brent-today-mark" title="Prix du jour — cliquer pour revenir ici"></div>
@@ -281,10 +281,10 @@ section.panel.active{display:block;}
     <div class="card">
       <h2>Le paradoxe de la TICPE</h2>
       <div class="shareStats" style="margin-bottom:10px;">
-        <div class="box"><div class="v alt">2,30 €</div><div class="l">gazole, prix record — septembre 2026</div></div>
+        <div class="box"><div class="v alt">2,40 €</div><div class="l">gazole, prix record — fin septembre 2026</div></div>
         <div class="box"><div class="v">−12 %</div><div class="l">consommation de carburant, mai 2026 vs 2025 (pire depuis 2008)</div></div>
       </div>
-      <p class="note">Le baril de Brent a dépassé les 100 $ le 10 septembre 2026 (jusqu'à ~110 $), tiré par les tensions autour du détroit d'Ormuz. Résultat à la pompe : gazole à 2,30 €/L, SP95 autour de 2,17 €/L — des niveaux inédits.</p>
+      <p class="note">Le baril de Brent a dépassé les 100 $ le 10 septembre 2026 (jusqu'à ~110 $), tiré par les tensions autour du détroit d'Ormuz. Résultat à la pompe : le gazole atteint ~2,40 €/L et le SP95 ~2,21 €/L fin septembre (moyennes nationales au 23/09) — des niveaux inédits.</p>
       <p class="note">Mais les automobilistes ont réagi : la consommation de carburant a chuté d'environ <b>−12 % en mai</b>, puis encore <b>−6,6 % en août</b> 2026 sur un an. Résultat : sur le premier semestre 2026, les recettes de TICPE reculent légèrement par rapport à la même période en 2025 — malgré la flambée des prix.</p>
       <p class="note"><b>Pourquoi ?</b> La TICPE est une accise <b>fixe</b> par litre (~0,60 €/L pour le gazole, ~0,68 €/L pour le SP95), indépendante du prix du baril. Elle ne rapporte que si on continue d'acheter autant de litres. Seule la TVA (20 %, proportionnelle au prix) progresse un peu avec la hausse — mais pas assez pour compenser la chute des volumes.</p>
     </div>
@@ -329,13 +329,13 @@ section.panel.active{display:block;}
   </section>
 
   <div class="sources">
-    Repères (susceptibles d'évoluer) : décomposition au 24/08/2026 (SP95) et 11/09/2026 (Gazole) d'après le Ministère de la Transition écologique (DGEC) via
+    Repères (susceptibles d'évoluer) : prix moyens à la pompe <span id="prix-source-note">au 23/09/2026 (Gazole 2,397 €/L, SP95 2,215 €/L) d'après <a href="https://prix-carburant.eu/article/prix-carburants-2026-09-23" target="_blank" rel="noopener">prix-carburant.eu</a> (déclarations officielles des stations)</span> — mis à jour automatiquement chaque jour une fois l'appli hébergée en dehors de claude.ai ; la cotation en est déduite, les montants d'accise et de distribution étant ceux publiés par le Ministère de la Transition écologique (DGEC) via
     <a href="https://www.connaissancedesenergies.org/fiche-pedagogique/structuration-des-prix-de-lessence-et-du-gazole-en-france" target="_blank" rel="noopener">Connaissance des Énergies</a>,
     <a href="https://www.bobbycarottes.com/outils/decomposition-prix-carburants-france" target="_blank" rel="noopener">Bobby Carottes</a> et
     <a href="https://data.roole.fr/budget-auto/prix-des-carburants/decomposition-du-prix-du-gasoil" target="_blank" rel="noopener">Roole</a> (17/09/2026).
     CEE (Certificats d'Économie d'Énergie) : obligation imposée par l'État aux distributeurs de carburant, répercutée à la pompe (~0,16 €/L depuis le 01/01/2026, TVA en plus). Ce n'est pas une taxe versée au budget de l'État — les sommes financent des primes d'économies d'énergie — mais c'est un surcoût réglementaire : l'appli le compte donc avec les taxes et prélèvements. Montant selon l'UFIP, cité par
     <a href="https://www.connaissancedesenergies.org/afp/les-prix-des-carburants-vont-augmenter-de-4-6-centimes-par-litre-en-2026-en-raison-des-cee-251126" target="_blank" rel="noopener">Connaissance des Énergies (AFP)</a>.
-    Cours du Brent : <span id="brent-source-note">valeur du 18/09/2026, <a href="https://prixdubaril.com/" target="_blank" rel="noopener">prixdubaril.com</a></span> — mis à jour automatiquement chaque jour une fois l'appli hébergée en dehors de claude.ai.
+    Cours du Brent : <span id="brent-source-note">valeur du 27/09/2026, <a href="https://www.oilpriceapi.com/" target="_blank" rel="noopener">oilpriceapi.com</a></span> — mis à jour automatiquement chaque jour une fois l'appli hébergée en dehors de claude.ai.
     Ces valeurs sont mises à jour périodiquement, pas en temps réel — un léger décalage avec le prix à votre pompe est normal.
   </div>
 </div>
@@ -346,11 +346,11 @@ section.panel.active{display:block;}
 (function(){
   // ---- reference data (see Sources at the bottom of the page) ----
   var FUELS = {
-    gazole: { label:"Gazole", cotation0:1.048, distribution0:0.254, cee0:0.160, ticpe:0.607 },
-    sp95:   { label:"SP95",   cotation0:0.774, distribution0:0.255, cee0:0.160, ticpe:0.690 }
+    gazole: { label:"Gazole", cotation0:1.137, distribution0:0.254, cee0:0.160, ticpe:0.607 }, // → 2,397 €/L (moy. nationale 23/09/2026)
+    sp95:   { label:"SP95",   cotation0:0.901, distribution0:0.255, cee0:0.160, ticpe:0.690 }  // → 2,215 €/L (moy. nationale 23/09/2026)
   };
-  var BRENT_BASE = 102.55;        // $/baril — valeur de secours si brent.json est indisponible (ex : artifact claude.ai)
-  var BRENT_DATE = '18/09/2026';  // date de cette valeur de secours, format JJ/MM/AAAA
+  var BRENT_BASE = 104.38;        // $/baril — valeur de secours si brent.json est indisponible (ex : artifact claude.ai)
+  var BRENT_DATE = '27/09/2026';  // date de cette valeur de secours, format JJ/MM/AAAA
   var AXIS_MAX = 2.8;   // €/L, échelle des colonnes
   var SHAFT_H = 300;    // px, hauteur des colonnes (doit correspondre à .barshaft)
 
@@ -693,6 +693,33 @@ section.panel.active{display:block;}
   // hébergée sur GitHub Pages, un workflow GitHub Actions régénère ce fichier
   // chaque jour (voir .github/workflows/update-brent.yml) : tous les
   // visiteurs reçoivent alors automatiquement le cours du jour.
+  // ---- prix moyens à la pompe en direct (si disponibles) ----
+  // prix.json est régénéré chaque jour par le même workflow GitHub Actions,
+  // à partir des prix déclarés par les stations (data.economie.gouv.fr).
+  // On en déduit la cotation : prix ÷ 1,2 − accise − distribution (CEE compris).
+  fetch('./prix.json', { cache: 'no-store' }).then(function(r){
+    if (!r.ok) throw new Error('prix.json indisponible');
+    return r.json();
+  }).then(function(data){
+    var ok = false;
+    ['gazole','sp95'].forEach(function(key){
+      var p = data[key], f = FUELS[key];
+      if (typeof p !== 'number' || p < 1 || p > 4) return;
+      var cot = p / 1.2 - f.ticpe - f.distribution0;
+      if (cot > 0.2) { f.cotation0 = cot; ok = true; }
+    });
+    if (!ok) return;
+    renderSim();
+    var noteEl = document.getElementById('prix-source-note');
+    var d = new Date(data.date);
+    if (noteEl && !isNaN(d)) {
+      var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+      noteEl.textContent = 'au ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() +
+        ' (Gazole ' + fmt(data.gazole, 3) + ' €/L, SP95 ' + fmt(data.sp95, 3) + ' €/L) — moyenne de ' +
+        (data.stations ? data.stations.toLocaleString('fr-FR') + ' stations, ' : '') + (data.source || 'données publiques');
+    }
+  }).catch(function(){ /* pas de prix.json : valeurs de secours conservées */ });
+
   fetch('./brent.json', { cache: 'no-store' }).then(function(r){
     if (!r.ok) throw new Error('brent.json indisponible');
     return r.json();
