@@ -3,7 +3,7 @@ name: Mise à jour quotidienne du Brent et des prix à la pompe
 on:
   schedule:
     # 06:00 UTC chaque jour (≈ 08:00 heure de Paris en été, 07:00 en hiver)
-    - cron: - cron: '23 4,10,16 * * *'
+    - cron: '23 4,10,16 * * *'
   workflow_dispatch: {}   # permet de le lancer manuellement depuis l'onglet Actions
 
 permissions:
