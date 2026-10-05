@@ -25,13 +25,19 @@ IDBANK = {
     "defaillances": "001656164",  # Défaillances d'entreprises, données brutes, tous secteurs, par trimestre
 }
 
-# Séries repérées par leur intitulé dans le flux des comptes de secteurs (CNT base 2020)
-RECHERCHE_CSI = {
-    "pouvoir_achat_uc": re.compile(r"pouvoir d.achat.*unit[ée]s? de consommation", re.I),
-    "epargne": re.compile(r"taux d.[ée]pargne des m[ée]nages", re.I),
+# Séries des comptes trimestriels (base 2020) servant à calculer le taux d'épargne
+# et le pouvoir d'achat, avec la même méthode que l'Insee :
+#   taux d'épargne = épargne des ménages / (RDB + ajustement pour droits à pension)
+#   pouvoir d'achat par UC = évolution du RDB − évolution du prix de la consommation
+#                            des ménages − croissance du nombre d'unités de consommation
+CNT = {
+    "epargne": "011794755",      # Épargne des ménages (y c. EI), prix courants
+    "rdb": "011794746",          # Revenu disponible brut des ménages (y c. EI), prix courants
+    "ajust": "011794826",        # Ajustement pour variation des droits à pension reçus par les ménages
+    "conso_val": "011794863",    # Dépenses de consommation des ménages, prix courants
+    "conso_vol": "011794864",    # Dépenses de consommation des ménages, volume
 }
-EXCLURE = re.compile(r"s[ée]rie arr[êe]t[ée]e|niveau|valeur aux prix|annuel", re.I)
-
+CROISSANCE_UC = 0.15  # % par trimestre (≈ +0,6 %/an, hypothèse démographique Insee)
 
 def get(url, timeout=90):
     req = urllib.request.Request(url, headers={"User-Agent": "carburants-et-taxes/1.0"})
@@ -101,26 +107,28 @@ def main():
             bilan[cle] = {**point(obs), "precedent": point(obs, -2)}
         print(cle, "→", bilan[cle])
 
-    # 2) Pouvoir d'achat par UC et taux d'épargne (recherche par intitulé)
+    # 2) Taux d'épargne et pouvoir d'achat par unité de consommation (calculés)
     try:
-        csi = series_from_xml(get(BDM + "CNT-2020-CSI?lastNObservations=2", timeout=240))
+        cnt = series_from_xml(get(BDM + "SERIES_BDM/" + "+".join(CNT.values()) + "?lastNObservations=4"))
+        o = {k: dict(cnt[idb]["obs"]) for k, idb in CNT.items()}
+        periodes = sorted(set.intersection(*[set(v) for v in o.values()]))[-3:]
+        if len(periodes) < 3:
+            raise ValueError("trimestres communs insuffisants")
+        ep = {p: o["epargne"][p] / (o["rdb"][p] + o["ajust"][p]) * 100 for p in periodes}
+        prix = {p: o["conso_val"][p] / o["conso_vol"][p] for p in periodes}
+        pa = {}
+        for i in (1, 2):
+            p, q = periodes[i], periodes[i - 1]
+            pa[p] = ((o["rdb"][p] / o["rdb"][q]) / (prix[p] / prix[q]) - 1) * 100 - CROISSANCE_UC
+        p1, p0 = periodes[2], periodes[1]
+        bilan["epargne"] = {"periode": p1, "valeur": round(ep[p1], 2),
+                            "precedent": {"periode": p0, "valeur": round(ep[p0], 2)}}
+        bilan["pouvoir_achat_uc"] = {"periode": p1, "valeur": round(pa[p1], 2),
+                                     "precedent": {"periode": p0, "valeur": round(pa[p0], 2)}}
+        print("epargne →", bilan["epargne"])
+        print("pouvoir_achat_uc →", bilan["pouvoir_achat_uc"])
     except Exception as e:
-        print("Flux CNT-2020-CSI indisponible :", e)
-        csi = {}
-    for cle, motif in RECHERCHE_CSI.items():
-        cands = [
-            (idb, s) for idb, s in csi.items()
-            if motif.search(s["titre"]) and not EXCLURE.search(s["titre"]) and len(s["obs"]) >= 2
-        ]
-        if cle == "pouvoir_achat_uc":
-            # on veut l'évolution trimestrielle (valeurs en %, petites)
-            cands = [c for c in cands if abs(c[1]["obs"][-1][1]) < 10]
-        if not cands:
-            print(f"{cle} : série introuvable, valeur conservée")
-            continue
-        idb, s = sorted(cands, key=lambda c: len(c[1]["titre"]))[0]
-        bilan[cle] = {**point(s["obs"]), "precedent": point(s["obs"], -2), "idbank": idb}
-        print(cle, "→", idb, s["titre"], bilan[cle])
+        print("Épargne / pouvoir d'achat : calcul impossible, valeurs conservées :", e)
 
     # 3) Record du gazole (moyenne nationale), suivi à partir de prix.json
     try:
