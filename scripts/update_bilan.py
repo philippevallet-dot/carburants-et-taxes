@@ -11,6 +11,7 @@ Toute série introuvable ou invalide est ignorée : on garde la valeur précéde
 import json
 import re
 import sys
+import time
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -37,12 +38,19 @@ CNT = {
     "conso_val": "011794863",    # Dépenses de consommation des ménages, prix courants
     "conso_vol": "011794864",    # Dépenses de consommation des ménages, volume
 }
-CROISSANCE_UC = 0.15  # % par trimestre (≈ +0,6 %/an, hypothèse démographique Insee)
+CROISSANCE_UC = 0.125  # % par trimestre (≈ +0,5 %/an, croissance du nombre d'unités de consommation)
 
-def get(url, timeout=90):
+def get(url, timeout=90, essais=3):
     req = urllib.request.Request(url, headers={"User-Agent": "carburants-et-taxes/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+    for i in range(essais):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
+        except Exception as e:
+            if i == essais - 1:
+                raise
+            print("Nouvel essai après erreur :", e)
+            time.sleep(20)
 
 
 def series_from_xml(raw):
@@ -121,10 +129,10 @@ def main():
             p, q = periodes[i], periodes[i - 1]
             pa[p] = ((o["rdb"][p] / o["rdb"][q]) / (prix[p] / prix[q]) - 1) * 100 - CROISSANCE_UC
         p1, p0 = periodes[2], periodes[1]
-        bilan["epargne"] = {"periode": p1, "valeur": round(ep[p1], 2),
-                            "precedent": {"periode": p0, "valeur": round(ep[p0], 2)}}
-        bilan["pouvoir_achat_uc"] = {"periode": p1, "valeur": round(pa[p1], 2),
-                                     "precedent": {"periode": p0, "valeur": round(pa[p0], 2)}}
+        bilan["epargne"] = {"periode": p1, "valeur": round(ep[p1], 1),
+                            "precedent": {"periode": p0, "valeur": round(ep[p0], 1)}}
+        bilan["pouvoir_achat_uc"] = {"periode": p1, "valeur": round(pa[p1], 1),
+                                     "precedent": {"periode": p0, "valeur": round(pa[p0], 1)}}
         print("epargne →", bilan["epargne"])
         print("pouvoir_achat_uc →", bilan["pouvoir_achat_uc"])
     except Exception as e:
