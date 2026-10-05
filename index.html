@@ -281,7 +281,7 @@ section.panel.active{display:block;}
     <div class="card">
       <h2>Le paradoxe de la TICPE</h2>
       <div class="shareStats" style="margin-bottom:10px;">
-        <div class="box"><div class="v alt">2,40 €</div><div class="l">gazole, prix record — fin septembre 2026</div></div>
+        <div class="box"><div class="v alt" id="b-record-v">2,40 €</div><div class="l" id="b-record-l">gazole, prix record — fin septembre 2026</div></div>
         <div class="box"><div class="v">−12 %</div><div class="l">consommation de carburant, mai 2026 vs 2025 (pire depuis 2008)</div></div>
       </div>
       <p class="note">Le baril de Brent a dépassé les 100 $ le 10 septembre 2026 (jusqu'à ~110 $), tiré par les tensions autour du détroit d'Ormuz. Résultat à la pompe : le gazole atteint ~2,40 €/L et le SP95 ~2,21 €/L fin septembre (moyennes nationales au 23/09) — des niveaux inédits.</p>
@@ -292,20 +292,20 @@ section.panel.active{display:block;}
     <div class="card">
       <h2>Vue macro : le pouvoir d'achat trinque</h2>
       <div class="shareStats" style="margin-bottom:10px;">
-        <div class="box"><div class="v">+0,0 %</div><div class="l">PIB, T2 2026 — stagnation, après −0,2 % au T1</div></div>
-        <div class="box"><div class="v alt">−0,6 %</div><div class="l">pouvoir d'achat par ménage, T2 2026</div></div>
+        <div class="box"><div class="v" id="b-pib-v">+0,0 %</div><div class="l" id="b-pib-l">PIB, T2 2026 — stagnation, après −0,2 % au T1</div></div>
+        <div class="box"><div class="v alt" id="b-pa-v">−0,6 %</div><div class="l" id="b-pa-l">pouvoir d'achat par ménage, T2 2026</div></div>
       </div>
-      <p class="note">L'économie française stagne (+0,0 % au T2 2026, après un recul de −0,2 % au T1). Sur la même période, le pouvoir d'achat des ménages recule nettement (−0,6 % par unité de consommation), pénalisé par une inflation qui remonte (+1,0 % au T2) et par la détérioration des termes de l'échange liée à la flambée des prix de l'énergie sur les marchés mondiaux.</p>
-      <p class="note">Conséquence directe : les ménages réduisent leur consommation d'énergie et leur taux d'épargne recule (17,2 %, contre 17,9 % au trimestre précédent) — signe d'un budget de plus en plus tendu.</p>
+      <p class="note"><span id="b-macro-txt">L'économie française stagne (+0,0 % au T2 2026, après un recul de −0,2 % au T1). Sur la même période, le pouvoir d'achat des ménages recule nettement (−0,6 % par unité de consommation), pénalisé par une inflation qui remonte (+1,0 % au T2) et par la détérioration des termes de l'échange liée à la flambée des prix de l'énergie sur les marchés mondiaux.</span></p>
+      <p class="note" id="b-epargne-txt">Conséquence directe : les ménages réduisent leur consommation d'énergie et leur taux d'épargne recule (17,2 %, contre 17,9 % au trimestre précédent) — signe d'un budget de plus en plus tendu.</p>
     </div>
 
     <div class="card">
       <h2>L'engrenage : chômage et fermetures d'entreprises</h2>
       <div class="shareStats" style="margin-bottom:10px;">
-        <div class="box"><div class="v">8,3 %</div><div class="l">taux de chômage, T2 2026 — plus haut niveau depuis 2020</div></div>
-        <div class="box"><div class="v alt">+5 %</div><div class="l">défaillances d'entreprises, T2 2026 vs T2 2025</div></div>
+        <div class="box"><div class="v" id="b-cho-v">8,3 %</div><div class="l" id="b-cho-l">taux de chômage, T2 2026 — plus haut niveau depuis 2020</div></div>
+        <div class="box"><div class="v alt" id="b-def-v">+5 %</div><div class="l" id="b-def-l">défaillances d'entreprises, T2 2026 vs T2 2025</div></div>
       </div>
-      <p class="note">Le chômage grimpe trimestre après trimestre (8,1 % au T1, 8,3 % au T2 2026) et l'Insee anticipe jusqu'à 8,6 % sur l'année. Plus de 70 000 défaillances d'entreprises sont attendues en 2026, avec une accélération marquée dans l'hébergement-restauration (+11 %) et le commerce automobile (+14 %) — des secteurs directement sensibles aux arbitrages de budget des ménages.</p>
+      <p class="note"><span id="b-cho-txt">Le chômage grimpe trimestre après trimestre (8,1 % au T1, 8,3 % au T2 2026) et l'Insee anticipe jusqu'à 8,6 % sur l'année.</span> Selon les prévisions d'Allianz Trade (mi-2026), plus de 70 000 défaillances d'entreprises sont attendues en 2026, avec une accélération marquée dans l'hébergement-restauration (+11 %) et le commerce automobile (+14 %) — des secteurs directement sensibles aux arbitrages de budget des ménages.</p>
       <p class="note">Le mécanisme se referme : moins de pouvoir d'achat → moins de sorties au restaurant, moins de loisirs, moins de consommation → des commerces qui ferment → du chômage supplémentaire à indemniser, et moins de TVA collectée sur tout ce qui n'est plus dépensé. Une perte fiscale diffuse, plus difficile à chiffrer que la TICPE, mais qui pèse dans le même sens.</p>
     </div>
 
@@ -324,7 +324,8 @@ section.panel.active{display:block;}
       PIB, pouvoir d'achat et chômage : Insee,
       <a href="https://www.insee.fr/fr/statistiques/9039499" target="_blank" rel="noopener">informations rapides T2 2026</a> et
       <a href="https://www.insee.fr/fr/statistiques/9032359" target="_blank" rel="noopener">chômage T2 2026</a>.
-      Défaillances d'entreprises : <a href="https://www.allianz-trade.fr/actualites/defaillances-entreprises-france-t2-2026.html" target="_blank" rel="noopener">Allianz Trade, T2 2026</a>.
+      Défaillances d'entreprises : Insee et <a href="https://www.allianz-trade.fr/actualites/defaillances-entreprises-france-t2-2026.html" target="_blank" rel="noopener">Allianz Trade, T2 2026</a>.
+      <span id="b-maj"></span>
     </div>
   </section>
 
@@ -739,6 +740,72 @@ section.panel.active{display:block;}
       if (noteEl) noteEl.textContent = 'valeur du ' + BRENT_DATE + ', ' + (data.source || 'API');
     }
   }).catch(function(){ /* pas de brent.json : valeur de secours conservée */ });
+
+  // ---- onglet Bilan : indicateurs économiques (si disponibles) ----
+  // bilan.json est régénéré par .github/workflows/update-bilan.yml dès que l'Insee
+  // publie un nouveau chiffre (PIB, pouvoir d'achat, épargne, chômage, défaillances).
+  // Sans ce fichier (ex : artifact claude.ai), les textes d'origine restent affichés.
+  fetch('./bilan.json', { cache: 'no-store' }).then(function(r){
+    if (!r.ok) throw new Error('bilan.json indisponible');
+    return r.json();
+  }).then(function(b){
+    var set = function(id, html){ var el = document.getElementById(id); if (el && html) el.innerHTML = html; };
+    var num = function(x){ return typeof x === 'number' && isFinite(x); };
+    var pc = function(v){ return (v > 0 ? '+' : v < 0 ? '−' : '+') + fmt(Math.abs(v), 1) + ' %'; };
+    var trim = function(p){ var m = /^(\d{4})-Q(\d)$/.exec(p || ''); return m ? 'T' + m[2] + ' ' + m[1] : (p || ''); };
+    var trimCourt = function(p, ref){ var t = trim(p); return (ref && p && ref.slice(0,4) === p.slice(0,4)) ? t.split(' ')[0] : t; };
+    var ok = function(o){ return o && num(o.valeur) && o.precedent && num(o.precedent.valeur); };
+
+    if (b.record_gazole && num(b.record_gazole.prix)) {
+      var dr = new Date(b.record_gazole.date);
+      var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+      set('b-record-v', fmt(b.record_gazole.prix, 2) + ' €');
+      if (!isNaN(dr)) set('b-record-l', 'gazole, prix record (moyenne nationale) — ' + mois[dr.getMonth()] + ' ' + dr.getFullYear());
+    }
+    if (ok(b.pib)) {
+      var v = b.pib.valeur, pv = b.pib.precedent.valeur;
+      var etat = v <= -0.05 ? 'recul' : v < 0.15 ? 'stagnation' : 'reprise';
+      set('b-pib-v', pc(v));
+      set('b-pib-l', 'PIB, ' + trim(b.pib.periode) + ' — ' + etat + ', après ' + pc(pv) + ' au ' + trimCourt(b.pib.precedent.periode, b.pib.periode));
+    }
+    if (ok(b.pouvoir_achat_uc)) {
+      set('b-pa-v', pc(b.pouvoir_achat_uc.valeur));
+      set('b-pa-l', 'pouvoir d\'achat par ménage (par unité de consommation), ' + trim(b.pouvoir_achat_uc.periode));
+    }
+    if (ok(b.pib) && ok(b.pouvoir_achat_uc)) {
+      var v1 = b.pib.valeur, v0 = b.pib.precedent.valeur, pa = b.pouvoir_achat_uc.valeur;
+      var verbe = v1 <= -0.05 ? 'recule' : v1 < 0.15 ? 'stagne' : 'repart';
+      var t = 'L\'économie française ' + verbe + ' (' + pc(v1) + ' au ' + trim(b.pib.periode) + ', après ' +
+        (v0 < 0 ? 'un recul de ' : 'une évolution de ') + pc(v0) + ' au ' + trimCourt(b.pib.precedent.periode, b.pib.periode) + '). ';
+      t += pa < 0
+        ? 'Sur la même période, le pouvoir d\'achat des ménages recule (' + pc(pa) + ' par unité de consommation), pénalisé par la hausse des prix et la flambée des prix de l\'énergie sur les marchés mondiaux.'
+        : 'Sur la même période, le pouvoir d\'achat des ménages ' + (pa < 0.15 ? 'se maintient tout juste' : 'se redresse') + ' (' + pc(pa) + ' par unité de consommation), mais reste sous la pression des prix de l\'énergie.';
+      set('b-macro-txt', t);
+    }
+    if (ok(b.epargne)) {
+      var e = b.epargne.valeur, ep = b.epargne.precedent.valeur;
+      set('b-epargne-txt', e < ep
+        ? 'Conséquence directe : les ménages réduisent leur consommation d\'énergie et leur taux d\'épargne recule (' + fmt(e,1) + ' %, contre ' + fmt(ep,1) + ' % au trimestre précédent) — signe d\'un budget de plus en plus tendu.'
+        : 'Les ménages réduisent leur consommation d\'énergie et ' + (e > ep ? 'augmentent leur épargne de précaution' : 'maintiennent leur épargne') + ' (taux d\'épargne de ' + fmt(e,1) + ' %, contre ' + fmt(ep,1) + ' % au trimestre précédent) — signe d\'une forte prudence face à la crise.');
+    }
+    if (ok(b.chomage)) {
+      var c = b.chomage.valeur, cp = b.chomage.precedent.valeur;
+      set('b-cho-v', fmt(c, 1) + ' %');
+      set('b-cho-l', 'taux de chômage, ' + trim(b.chomage.periode) + (c > cp ? ' — en hausse' : c < cp ? ' — en baisse' : ' — stable'));
+      set('b-cho-txt', (c > cp ? 'Le chômage grimpe' : c < cp ? 'Le chômage reflue' : 'Le chômage se maintient à un niveau élevé') +
+        ' (' + fmt(cp,1) + ' % au ' + trimCourt(b.chomage.precedent.periode, b.chomage.periode) + ', ' + fmt(c,1) + ' % au ' + trim(b.chomage.periode) + ').' +
+        (b.defaillances && num(b.defaillances.nombre) ? ' Côté entreprises, ' + b.defaillances.nombre.toLocaleString('fr-FR') + ' défaillances ont été prononcées au ' + trim(b.defaillances.periode) + '.' : ''));
+    }
+    if (b.defaillances && num(b.defaillances.evol_an)) {
+      var pd = b.defaillances.periode, m = /^(\d{4})-Q(\d)$/.exec(pd || '');
+      set('b-def-v', (b.defaillances.evol_an >= 0 ? '+' : '−') + Math.round(Math.abs(b.defaillances.evol_an)) + ' %');
+      if (m) set('b-def-l', 'défaillances d\'entreprises, T' + m[2] + ' ' + m[1] + ' vs T' + m[2] + ' ' + (m[1] - 1));
+    }
+    if (b.maj) {
+      var dm = new Date(b.maj);
+      if (!isNaN(dm)) set('b-maj', 'Indicateurs mis à jour automatiquement à chaque publication de l\'Insee — dernière mise à jour le ' + dm.toLocaleDateString('fr-FR') + '.');
+    }
+  }).catch(function(){ /* pas de bilan.json : textes d'origine conservés */ });
 })();
 </script>
 <script>

@@ -1,0 +1,37 @@
+name: Mise à jour des indicateurs économiques (onglet Bilan)
+
+on:
+  schedule:
+    # Chaque jour à 06:41 UTC, juste après les publications de l'Insee (7h30 / 8h45 heure de Paris).
+    # bilan.json n'est modifié que lorsqu'un nouveau chiffre est publié (≈ une fois par mois et par indicateur).
+    - cron: '41 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: maj-donnees
+  cancel-in-progress: false
+
+jobs:
+  update-bilan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Récupérer les derniers indicateurs Insee
+        run: python3 scripts/update_bilan.py
+
+      - name: Publier si bilan.json a changé
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add bilan.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Mise à jour automatique des indicateurs économiques (Bilan)"
+            git pull --rebase
+            git push
+          else
+            echo "Aucun changement."
+          fi

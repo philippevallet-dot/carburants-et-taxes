@@ -1,6 +1,6 @@
 // Service worker minimal : mise en cache de l'app pour un fonctionnement
 // hors-ligne et une installation reconnue comme PWA valide (Lighthouse).
-const CACHE_NAME = 'carburants-taxes-v2';
+const CACHE_NAME = 'carburants-taxes-v3';
 const ASSETS = [
   './',
   './index.html',
