@@ -24,6 +24,7 @@ IDBANK = {
     "pib": "011794844",           # Évolution trimestrielle du PIB en volume (CVS-CJO), en %
     "chomage": "001688527",       # Taux de chômage BIT, France hors Mayotte, CVS, en %
     "defaillances": "001656164",  # Défaillances d'entreprises, données brutes, tous secteurs, par trimestre
+    "conso_carburant": "011795175",  # Conso des ménages en produits pétroliers raffinés (carburants, fioul), volume CVS-CJO
 }
 
 # Séries des comptes trimestriels (base 2020) servant à calculer le taux d'épargne
@@ -100,7 +101,7 @@ def main():
         if len(obs) < 2:
             print(f"{cle} ({idb}) : pas de données, valeur conservée")
             continue
-        if cle == "defaillances":
+        if cle in ("defaillances", "conso_carburant"):
             dernier_p, dernier_v = obs[-1]
             # même trimestre un an plus tôt
             a, q = dernier_p.split("-")
@@ -108,7 +109,7 @@ def main():
             prec = dict(obs).get(ref)
             bilan[cle] = {
                 "periode": dernier_p,
-                "nombre": int(dernier_v),
+                "nombre": int(dernier_v) if cle == "defaillances" else None,
                 "evol_an": round((dernier_v / prec - 1) * 100, 1) if prec else None,
             }
         else:

@@ -282,7 +282,7 @@ section.panel.active{display:block;}
       <h2>Le paradoxe de la TICPE</h2>
       <div class="shareStats" style="margin-bottom:10px;">
         <div class="box"><div class="v alt" id="b-record-v">2,40 €</div><div class="l" id="b-record-l">gazole, prix record — fin septembre 2026</div></div>
-        <div class="box"><div class="v">−12 %</div><div class="l">consommation de carburant, mai 2026 vs 2025 (pire depuis 2008)</div></div>
+        <div class="box"><div class="v" id="b-conso-v">−12 %</div><div class="l" id="b-conso-l">consommation de carburant, mai 2026 vs 2025 (pire depuis 2008)</div></div>
       </div>
       <p class="note">Le baril de Brent a dépassé les 100 $ le 10 septembre 2026 (jusqu'à ~110 $), tiré par les tensions autour du détroit d'Ormuz. Résultat à la pompe : le gazole atteint ~2,40 €/L et le SP95 ~2,21 €/L fin septembre (moyennes nationales au 23/09) — des niveaux inédits.</p>
       <p class="note">Mais les automobilistes ont réagi : la consommation de carburant a chuté d'environ <b>−12 % en mai</b>, puis encore <b>−6,6 % en août</b> 2026 sur un an. Résultat : sur le premier semestre 2026, les recettes de TICPE reculent légèrement par rapport à la même période en 2025 — malgré la flambée des prix.</p>
@@ -321,7 +321,7 @@ section.panel.active{display:block;}
       <a href="https://bourseinside.fr/economie/le-paradoxe-de-la-ticpe-pourquoi-letat-perd-de-largent-quand-le-prix-de-votre-plein-dessence-explose/" target="_blank" rel="noopener">Bourse Inside</a>,
       <a href="https://www.journaldeleconomie.fr/carburants-aides-400-million-37-milliard/" target="_blank" rel="noopener">Le Journal de l'Économie</a> et
       <a href="https://lenergeek.com/2026/05/13/carburant-etat-contraint-revoir-baisse-recettes-fiscales/" target="_blank" rel="noopener">L'EnerGeek</a> (2026).
-      PIB, pouvoir d'achat et chômage : Insee,
+      Encadré « consommation de carburant », PIB, pouvoir d'achat, épargne et chômage : Insee (comptes trimestriels),
       <a href="https://www.insee.fr/fr/statistiques/9039499" target="_blank" rel="noopener">informations rapides T2 2026</a> et
       <a href="https://www.insee.fr/fr/statistiques/9032359" target="_blank" rel="noopener">chômage T2 2026</a>.
       Défaillances d'entreprises : Insee et <a href="https://www.allianz-trade.fr/actualites/defaillances-entreprises-france-t2-2026.html" target="_blank" rel="noopener">Allianz Trade, T2 2026</a>.
@@ -795,6 +795,11 @@ section.panel.active{display:block;}
       set('b-cho-txt', (c > cp ? 'Le chômage grimpe' : c < cp ? 'Le chômage reflue' : 'Le chômage se maintient à un niveau élevé') +
         ' (' + fmt(cp,1) + ' % au ' + trimCourt(b.chomage.precedent.periode, b.chomage.periode) + ', ' + fmt(c,1) + ' % au ' + trim(b.chomage.periode) + ').' +
         (b.defaillances && num(b.defaillances.nombre) ? ' Côté entreprises, ' + b.defaillances.nombre.toLocaleString('fr-FR') + ' défaillances ont été prononcées au ' + trim(b.defaillances.periode) + '.' : ''));
+    }
+    if (b.conso_carburant && num(b.conso_carburant.evol_an)) {
+      var pc2 = b.conso_carburant.periode, mc = /^(\d{4})-Q(\d)$/.exec(pc2 || '');
+      set('b-conso-v', pc(b.conso_carburant.evol_an));
+      if (mc) set('b-conso-l', 'consommation de carburant et fioul des ménages (volume), T' + mc[2] + ' ' + mc[1] + ' vs T' + mc[2] + ' ' + (mc[1] - 1));
     }
     if (b.defaillances && num(b.defaillances.evol_an)) {
       var pd = b.defaillances.periode, m = /^(\d{4})-Q(\d)$/.exec(pd || '');
