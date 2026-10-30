@@ -1,10 +1,10 @@
 {
   "pib": {
-    "periode": "2026-Q2",
-    "valeur": 0.0,
+    "periode": "2026-Q3",
+    "valeur": -0.1,
     "precedent": {
-      "periode": "2026-Q1",
-      "valeur": -0.2
+      "periode": "2026-Q2",
+      "valeur": 0.0
     }
   },
   "chomage": {
@@ -25,12 +25,12 @@
     "valeur": -0.6,
     "precedent": {
       "periode": "2026-Q1",
-      "valeur": -0.2
+      "valeur": -0.1
     }
   },
   "epargne": {
     "periode": "2026-Q2",
-    "valeur": 17.2,
+    "valeur": 17.4,
     "precedent": {
       "periode": "2026-Q1",
       "valeur": 17.9
@@ -40,11 +40,11 @@
     "prix": 2.397,
     "date": "2026-09-23"
   },
-  "maj": "2026-10-06",
+  "maj": "2026-10-30",
   "source": "Insee (BDM) ; prix à la pompe : data.economie.gouv.fr",
   "conso_carburant": {
-    "periode": "2026-Q2",
+    "periode": "2026-Q3",
     "nombre": null,
-    "evol_an": -7.6
+    "evol_an": -5.8
   }
 }
