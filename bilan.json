@@ -8,11 +8,11 @@
     }
   },
   "chomage": {
-    "periode": "2026-Q2",
-    "valeur": 8.3,
+    "periode": "2026-Q3",
+    "valeur": 8.2,
     "precedent": {
-      "periode": "2026-Q1",
-      "valeur": 8.1
+      "periode": "2026-Q2",
+      "valeur": 8.3
     }
   },
   "defaillances": {
@@ -40,7 +40,7 @@
     "prix": 2.397,
     "date": "2026-09-23"
   },
-  "maj": "2026-10-30",
+  "maj": "2026-11-10",
   "source": "Insee (BDM) ; prix à la pompe : data.economie.gouv.fr",
   "conso_carburant": {
     "periode": "2026-Q3",
