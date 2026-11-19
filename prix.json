@@ -1,8 +1,8 @@
 {
-  "gazole": 2.154,
-  "sp95": 2.052,
+  "gazole": 2.153,
+  "sp95": 2.05,
   "e10": 1.982,
-  "stations": 9495,
-  "date": "2026-11-19T13:33:52Z",
+  "stations": 9479,
+  "date": "2026-11-19T23:07:14Z",
   "source": "data.economie.gouv.fr"
 }
