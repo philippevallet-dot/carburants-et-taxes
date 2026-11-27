@@ -1,7 +1,7 @@
 {
   "pib": {
     "periode": "2026-Q3",
-    "valeur": -0.1,
+    "valeur": -0.2,
     "precedent": {
       "periode": "2026-Q2",
       "valeur": 0.0
@@ -21,30 +21,30 @@
     "evol_an": 4.8
   },
   "pouvoir_achat_uc": {
-    "periode": "2026-Q2",
-    "valeur": -0.6,
+    "periode": "2026-Q3",
+    "valeur": 0.1,
     "precedent": {
-      "periode": "2026-Q1",
-      "valeur": -0.1
+      "periode": "2026-Q2",
+      "valeur": -0.6
     }
   },
   "epargne": {
-    "periode": "2026-Q2",
+    "periode": "2026-Q3",
     "valeur": 17.4,
     "precedent": {
-      "periode": "2026-Q1",
-      "valeur": 17.9
+      "periode": "2026-Q2",
+      "valeur": 17.4
     }
   },
   "record_gazole": {
     "prix": 2.397,
     "date": "2026-09-23"
   },
-  "maj": "2026-11-10",
+  "maj": "2026-11-27",
   "source": "Insee (BDM) ; prix à la pompe : data.economie.gouv.fr",
   "conso_carburant": {
     "periode": "2026-Q3",
     "nombre": null,
-    "evol_an": -5.8
+    "evol_an": -5.9
   }
 }
